@@ -1,9 +1,11 @@
 from models.pages.announcement_page import AnnouncementPage
 from models.pages.attendance_page import AttendancePage
 from views.automater_view import MainWindow,LoginWindow
-import PyQt5
 from selenium_header import *
+from PyQt5.QtCore import QThread
 import json
+import logging
+import os
 
 
 class Controller():
@@ -17,6 +19,7 @@ class Controller():
         if isLogin:
                 self.loginWin.loginMessageBox(True)
                 self.loginWin.close()
+                self.runMainWindow()
         else:
                 self.loginWin.loginMessageBox(False)
     
@@ -26,11 +29,23 @@ class Controller():
         isLogin = self.announcementPage.announcementLogin()
         if not isLogin:
             self.runLoginWindow()
+        else:
+            self.runMainWindow()
+
+    def initUserJson(self):
+        directory_list = os.listdir("json")
+        if "userinfo.json" not in directory_list:
+            logging.info(f"Creating userinfo.json")
+            with open(f"json\\userinfo.json", "w") as js:
+                string = "{\"username\" : \"\" , \"password\" : \"\"}"
+                js.write(string)
+
 
     def getIdPw(self): 
         """
         This function essentially asks for username and password, if it isn't exist in the json file.
         """
+
         has_info = False
         with open("json\\userinfo.json","r") as json_file:
             userinfo = json.load(json_file)
@@ -105,6 +120,20 @@ class Controller():
         self.mainWindow.insertToDisplay(string)
 
 
+    def updateNewAnnouncement(self):
+        with open(f"json\\{self.userId}_subject_info.json","r") as js:
+            subjectDict = json.load(js)
+        
+        string = ""
+        for subjectName in subjectDict:
+            string += f"---------------\n{subjectName}\n---------------\n"
+            for i in subjectDict[subjectName]["dateOfNew"]:
+                for j in subjectDict[subjectName]["announcements"][i]:
+                    string += j
+                    string += "\n---------------------------------------------\n"
+            string += "\n\n\n\n\n"
+        
+        self.mainWindow.insertToDisplay(string)
 
     def runMainWindow(self):
         self.mainWindow = MainWindow() 
@@ -113,15 +142,17 @@ class Controller():
         self.mainWindow.show()
         self.mainWindow.subjectChanged.connect(self.updateDateBox)
         self.mainWindow.viewAnnouncement.connect(self.updateAnnouncement)
+        self.mainWindow.viewNewAnnouncement.connect(self.updateNewAnnouncement)
     
 
     def start(self):
+        self.initUserJson()
         userinfo = self.getIdPw()
         if userinfo: 
             self.login(userinfo)
         else:
             self.runLoginWindow()
-        self.runMainWindow()
+        
         
             
         

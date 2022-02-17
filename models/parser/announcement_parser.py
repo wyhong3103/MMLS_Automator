@@ -89,8 +89,8 @@ class Parser:
         directory_list = os.listdir("json")
         if f"{userid}_subject_info.json" not in directory_list:
             logging.info(f"Creating subject json file for {userid} directory")
-            with open(f"json\\{userid}_subject_info.json", "w") as json:
-                json.write("{}")
+            with open(f"json\\{userid}_subject_info.json", "w") as js:
+                js.write("{}")
 
 
     def updateAnnouncements(self,subjectName : str, userid : str) -> Dict:

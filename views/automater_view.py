@@ -21,6 +21,7 @@ class MainWindow(QMainWindow):
 
     subjectChanged = QtCore.pyqtSignal(str)
     viewAnnouncement = QtCore.pyqtSignal(str,str)
+    viewNewAnnouncement = QtCore.pyqtSignal(bool)
 
     def __init__(self):
         super(MainWindow,self).__init__()
@@ -103,6 +104,7 @@ class MainWindow(QMainWindow):
         self.annoucementMenuLayout.addStretch(1)
         self.viewNewButton = QPushButton("View All\n New Announcements")
         self.viewNewButton.setMinimumHeight(60)
+        self.viewNewButton.clicked.connect(self.on_viewNewAnnouncement)
         self.annoucementMenuLayout.addWidget(self.viewNewButton)
 
         self.annoucementMenuLayout.addStretch(2)
@@ -166,6 +168,11 @@ class MainWindow(QMainWindow):
         self.viewAnnouncement.emit(
             self.subjectBox.currentText(),
             self.dateBox.currentText()
+        )
+    
+    def on_viewNewAnnouncement(self):
+        self.viewNewAnnouncement.emit(
+            True
         )
 
 
