@@ -1,7 +1,6 @@
 from datetime import datetime
 import os
 import logging
-from gui import *
 
 
 #Intialize log file
@@ -17,11 +16,7 @@ logging.basicConfig(
 
 def main():
     logging.info("Starting main menu.")
-    app = QApplication(sys.argv)
-    win = LoginWindow()
-    win.show()
     logging.info("Ending this application.")
-    sys.exit(app.exec_())
 
 if __name__  == "__main__":
     main()
