@@ -1,6 +1,9 @@
 from datetime import datetime
 import os
 import logging
+from PyQt5.QtWidgets import QApplication
+from controller import *
+import sys
 
 
 #Intialize log file
@@ -16,7 +19,12 @@ logging.basicConfig(
 
 def main():
     logging.info("Starting main menu.")
+    app = QApplication(sys.argv)
+    controller = Controller()
+    controller.start()
+
     logging.info("Ending this application.")
+    sys.exit(app.exec_())
 
 if __name__  == "__main__":
     main()

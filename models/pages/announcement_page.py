@@ -1,11 +1,10 @@
-import json
-from Locators.general_locators import GeneralLocators
-from Locators.page_locators import PageLocators
+from models.Locators.general_locators import GeneralLocators
+from models.Locators.page_locators import PageLocators
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.wait import WebDriverWait
-from parser.announcement_parser import Parser
+from models.parser.announcement_parser import Parser
 import logging
 
 
@@ -27,7 +26,7 @@ class AnnouncementPage:
         except:
             return False
 
-    def login(self):
+    def announcementLogin(self):
         """
         This function login to MMLS.
         """
@@ -49,6 +48,8 @@ class AnnouncementPage:
             if self.isElementPresent(GeneralLocators.INVALID_LOGIN):
                 logging.info("Login unsucessful! Reinitializing username and password, reask from user.")
                 return False
+        
+        self.checkSubjectCards()
         return True
             
     @property
@@ -61,7 +62,7 @@ class AnnouncementPage:
         card_list = self.page.find_elements(By.CSS_SELECTOR,subject_cards)
         return card_list
     
-    def subjects_checker(self):
+    def checkSubjectCards(self):
         """
         This function checks for new announcements, and provide the menu for navigation.
         """

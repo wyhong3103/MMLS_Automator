@@ -1,14 +1,16 @@
 from typing import Dict
-from Locators.page_locators import PageLocators,CardLocators
+from models.Locators.page_locators import PageLocators,CardLocators
 from selenium.webdriver.common.by import By
 import json
 import re
 import logging
+import os
 from datetime import datetime
 
 class Parser:
     def __init__(self,parent):
         self.parent = parent
+
 
     def updateJSON(self,subject_dict : str,subjectName : str) -> Dict:
         """
@@ -25,26 +27,27 @@ class Parser:
         announcementCards = self.parent.find_elements(By.CSS_SELECTOR,PageLocators.CARD_ANNOUNCEMENT)[1:]
         announcements =  subject_dict[subjectName]["announcements"]
         dateOfNew = []
-        dateKeys = announcements.keys()
+        dateKeys = list(announcements.keys())
 
         logging.info("New announcements are being updated to the JSON object.")
         #If dateKeys is empty that means we're going to grab all available announcements
         if dateKeys:
-            lastDate = dateKeys[-1]
+            lastDate = dateKeys[0]
             for i in announcementCards:
                 title = i.find_element(By.CSS_SELECTOR,CardLocators.TITLE).text
                 author = i.find_element(By.CSS_SELECTOR,CardLocators.AUTHOR).text
-                date = re.search("Published at : (.+)\n")[1]
+                date = re.search("Published at : (.+)",author)[1]
                 
                 #This code of block below here make sure we stop grabbing the announcements 
                 #if the announcements were before the date of our last announcement
-                dateObj = datetime.strp(date,"%d %b %Y")
-                lastDateObj = datetime.strp(lastDate, "%d %b %Y")
-                if (int(dateObj - lastDateObj) < 0) : break
+                dateObj = datetime.strptime(date,"%d %b %Y").timestamp()
+                lastDateObj = datetime.strptime(lastDate, "%d %b %Y").timestamp()
+                if (int(dateObj - lastDateObj) < 0):
+                    break
                 
                 task = i.find_element(By.CSS_SELECTOR,CardLocators.TASK).text
                 
-                if date in announcements.keys():
+                if date not in announcements.keys():
                     announcements[date] = []
                 announcementStr = f"Title:\n{title}\n\n{author}\n\nAnnouncement:\n{task}"
 
@@ -55,16 +58,22 @@ class Parser:
                     if announcementStr in announcements[lastDate]:
                         continue
                 announcements[date].append(announcementStr)
+
                 if date not in dateOfNew:
                     dateOfNew.append(date)
         else:
             for i in announcementCards:
                 title = i.find_element(By.CSS_SELECTOR,CardLocators.TITLE).text
                 author = i.find_element(By.CSS_SELECTOR,CardLocators.AUTHOR).text
-                date = re.search("Published at : (.+)\n")[1]
+                date = re.search("Published at : (.+)",str(author))[1]
                 task = i.find_element(By.CSS_SELECTOR,CardLocators.TASK).text
                 announcementStr = f"Title:\n{title}\n\n{author}\n\nAnnouncement:\n{task}"
+
+                if date not in announcements.keys():
+                    announcements[date] = []
+
                 announcements[date].append(announcementStr)
+
                 if date not in dateOfNew:
                     dateOfNew.append(date)
 
@@ -75,20 +84,30 @@ class Parser:
 
         return subject_dict
 
+    def initJSON(self, userid):
+
+        directory_list = os.listdir("json")
+        if f"{userid}_subject_info.json" not in directory_list:
+            logging.info(f"Creating subject json file for {userid} directory")
+            with open(f"json\\{userid}_subject_info.json", "w") as json:
+                json.write("{}")
+
 
     def updateAnnouncements(self,subjectName : str, userid : str) -> Dict:
         """
         This function loads the old announcements from the JSON, and update it.
         """
-        with open(f"json\\{userid}_subject_info","r") as json_file:
+        self.initJSON(userid)
+
+        with open(f"json\\{userid}_subject_info.json","r") as json_file:
             logging.info(f"subject_info json for {userid} is being read.")
             subject = json.load(json_file)
 
         newSubDict = self.updateJSON(subject,subjectName)
         
-        with open("json\\{userid}_subject_info","w") as json_file:
+        with open(f"json\\{userid}_subject_info.json","w") as json_file:
             logging.info(f"subject_info json for {userid} is being written.")
-            json.dump(newSubDict,json_file)
+            json.dump(newSubDict,json_file,indent=4)
         
         return newSubDict
 

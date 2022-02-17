@@ -1,5 +1,10 @@
 /json
 /logs
 /__pycache__
+/models/Locators/__pycache__
+/models/__pycache__
+/models/pages/__pycache__
+/models/parser/__pycache__
+/views/__pycache__
 test.py
 selenium_header.py
