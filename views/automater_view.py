@@ -18,14 +18,13 @@ Insert Subjects/dates to combo box
 """
 
 class MainWindow(QMainWindow):
-
     subjectChanged = QtCore.pyqtSignal(str)
     viewAnnouncement = QtCore.pyqtSignal(str,str)
     viewNewAnnouncement = QtCore.pyqtSignal(bool)
+    takeAttendance = QtCore.pyqtSignal(bool)
 
     def __init__(self):
         super(MainWindow,self).__init__()
-        self.setGeometry(600,200,1000,600)
         self.setFixedSize(1000, 750)
         self.setWindowTitle("MMLS Automater - 3.0")
         self._initUI()
@@ -43,7 +42,44 @@ class MainWindow(QMainWindow):
         self._initMainLayout()
         self._initAttendanceWidgets()
         self._initAnnouncementWidgets()
+        print(self.numberOfNew.text())
 
+    def insertToDisplay(self,text):
+        self.displayOutput.setText("")
+        self.displayOutput.insertPlainText(text)
+    
+    def insertToSubjectBox(self,array):
+        self.subjectBox.addItems(array)
+    
+    def insertToDateBox(self,array):
+        self.dateBox.addItems(array)
+
+    def updateNumerOfNewAnnouncement(self,text):
+        self.numberOfNew.setText(text)
+        self.numberOfNew.adjustSize()
+    
+    def on_subjectChanged(self):
+        self.subjectChanged.emit(
+            self.subjectBox.currentText()
+        )
+    
+    def on_viewAnnouncement(self):
+        self.viewAnnouncement.emit(
+            self.subjectBox.currentText(),
+            self.dateBox.currentText()
+        )
+
+    def on_viewNewAnnouncement(self):
+       self.viewNewAnnouncement.emit(
+           True
+       ) 
+    
+    def on_openAttendanceWindow(self):
+        self.attendanceWindow = AttendanceWindow()
+        self.takeAttendance.emit(
+            True
+        )
+        self.attendanceWindow.show()
 
     def _createActions(self):
         self.exitAction = QtWidgets.QAction("Exit",self)
@@ -69,6 +105,7 @@ class MainWindow(QMainWindow):
         self.attendanceButton = QPushButton("Take Attendance")
         self.attendanceLayout.addWidget(self.attendanceButton,2)
         self.attendanceButton.setMinimumHeight(70)
+        self.attendanceButton.clicked.connect(self.on_openAttendanceWindow)
 
     def _createTitle(self):
         self.titleText = QLabel("MMLS Automater 3.0")
@@ -145,36 +182,6 @@ class MainWindow(QMainWindow):
         sb = self.displayOutput.verticalScrollBar()
         sb.setValue(sb.maximum())
     
-    def insertToDisplay(self,text):
-        self.displayOutput.setText("")
-        self.displayOutput.insertPlainText(text)
-    
-    def insertToSubjectBox(self,array):
-        self.subjectBox.addItems(array)
-    
-    def insertToDateBox(self,array):
-        self.dateBox.addItems(array)
-
-    def updateNumerOfNewAnnouncement(self,text):
-        self.numberOfNew.setText(text)
-        self.numberOfNew.adjustSize()
-    
-    def on_subjectChanged(self):
-        self.subjectChanged.emit(
-            self.subjectBox.currentText()
-        )
-    
-    def on_viewAnnouncement(self):
-        self.viewAnnouncement.emit(
-            self.subjectBox.currentText(),
-            self.dateBox.currentText()
-        )
-    
-    def on_viewNewAnnouncement(self):
-        self.viewNewAnnouncement.emit(
-            True
-        )
-
 
     def _initMainLayout(self):
         """
@@ -218,7 +225,6 @@ class LoginWindow(QWidget):
 
     def __init__(self):
         super(LoginWindow,self).__init__()
-        self.setGeometry(750,300,500,250)
         self.setFixedSize(500, 250)
         self.setWindowTitle("MMLS Automater - 3.0 - Login")
         self._initui()
@@ -283,6 +289,77 @@ class LoginWindow(QWidget):
         self.loginLayout.addWidget(self.loginButton)
         self.loginLayout.setAlignment(self.loginButton, QtCore.Qt.AlignRight)
 
+class AttendanceWindow(QWidget):
+    
+    takeAttendance = QtCore.pyqtSignal(bool)
+    
+    def __init__(self):
+        super(AttendanceWindow,self).__init__()
+        self.setFixedSize(600,200)
+        self.setWindowTitle("Take Attendance")
+        self._initUI()
+    
+    def on_takeAttendance(self):
+        self.takeAttendance.emit(
+            True
+        )
+
+    def clearWidgets(self):
+        self.deleteItemsOfLayout()
+
+    def insertLabel(self,text):
+        label = QLabel(text)
+        label.setFont(QtGui.QFont("Normal",10))
+        label.setAlignment(QtCore.Qt.AlignCenter)
+        self.layout.addWidget(label)
+        
+
+
+    def deleteItemsOfLayout(self):
+        layout = self.layout
+        if layout is not None:
+            while layout.count():
+                item = layout.takeAt(0)
+                widget = item.widget()
+                if widget is not None:
+                    widget.setParent(None)
+                else:
+                    self.deleteItemsOfLayout()        
+    
+
+    def updateTimer(self):
+        if self.timerCount >= 0:
+            self.timerLabel.setText(str(self.timerCount))
+            self.timerCount -= 1
+        else:
+            self.timerLabel.setText("Processing...")
+            self.timer.stop()
+            self.clearWidgets()
+            self.on_takeAttendance()
+
+    def _initUI(self):
+        self.layout = QVBoxLayout()
+        self.setLayout(self.layout)
+        
+        attendanceLabel = QLabel("Please make sure the qr code is on the screen.")
+        attendanceLabel.setFont(QtGui.QFont("Normal",11))
+        attendanceLabel.setAlignment(QtCore.Qt.AlignCenter)
+        self.layout.addWidget(attendanceLabel)
+
+        self.layout.addStretch(1)
+
+        self.timerCount = 5
+        self.timerLabel = QLabel()
+        self.timerLabel.setFont(QtGui.QFont("LCD",30))
+        self.timerLabel.setAlignment(QtCore.Qt.AlignCenter)
+        self.timerLabel.setText(str(self.timerCount))
+        self.timer = QtCore.QTimer()
+        self.timer.timeout.connect(self.updateTimer)
+        self.timer.start(1000)
+        
+        self.layout.addWidget(self.timerLabel)
+
+        self.layout.addStretch(2)
 
 
 
@@ -290,6 +367,7 @@ def main():
     app = QApplication(sys.argv)
     win = MainWindow()
     win.show()
+    MessageBox().loginFail()
     sys.exit(app.exec_())
 
 if __name__ == "__main__" :

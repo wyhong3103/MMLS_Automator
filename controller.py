@@ -1,8 +1,7 @@
 from models.pages.announcement_page import AnnouncementPage
-from models.pages.attendance_page import AttendancePage
+from models.pages.attendance_page import AttendancePage, invalidCredential
 from views.automater_view import MainWindow,LoginWindow
 from selenium_header import *
-from PyQt5.QtCore import QThread
 import json
 import logging
 import os
@@ -45,7 +44,6 @@ class Controller():
         """
         This function essentially asks for username and password, if it isn't exist in the json file.
         """
-
         has_info = False
         with open("json\\userinfo.json","r") as json_file:
             userinfo = json.load(json_file)
@@ -82,6 +80,8 @@ class Controller():
     def updateDateBox(self, subject):
         self.mainWindow.dateBox.clear()
         self.mainWindow.dateBox.addItem("-")
+        if subject == "-":
+            return
         with open(f"json\\{self.userId}_subject_info.json","r") as js:
             subjectDict = json.load(js)
         
@@ -121,6 +121,10 @@ class Controller():
 
 
     def updateNewAnnouncement(self):
+        if self.mainWindow.numberOfNew.text() == "No New Announcements!":
+            self.mainWindow.insertToDisplay("There is no new announcement for today!")
+            return
+
         with open(f"json\\{self.userId}_subject_info.json","r") as js:
             subjectDict = json.load(js)
         
@@ -135,6 +139,32 @@ class Controller():
         
         self.mainWindow.insertToDisplay(string)
 
+    def takeAttendance(self):
+        userinfo = self.getIdPw()
+        attendance_page = AttendancePage(chrome,userinfo[0],userinfo[1])
+        attendance_page.qrcode_read()
+        try:
+            resultGenerator = attendance_page.takeAttendance()
+            firstLabel = next(resultGenerator)
+            #Clearing the widgets only before the first QR
+            self.mainWindow.attendanceWindow.clearWidgets()
+            self.mainWindow.attendanceWindow.insertLabel(firstLabel)
+
+            for i in resultGenerator:
+                self.mainWindow.attendanceWindow.insertLabel(i)                
+
+        except invalidCredential:
+            self.mainWindow.attendanceWindow.close()
+            self.mainWindow.close()
+            self.runLoginWindow()
+            self.loginWin.loginMessageBox(False)
+
+
+
+    def initAttendanceSlot(self):
+        self.mainWindow.attendanceWindow.takeAttendance.connect(self.takeAttendance)
+
+
     def runMainWindow(self):
         self.mainWindow = MainWindow() 
         self.updateNumberOfNewAnnouncements()
@@ -143,6 +173,7 @@ class Controller():
         self.mainWindow.subjectChanged.connect(self.updateDateBox)
         self.mainWindow.viewAnnouncement.connect(self.updateAnnouncement)
         self.mainWindow.viewNewAnnouncement.connect(self.updateNewAnnouncement)
+        self.mainWindow.takeAttendance.connect(self.initAttendanceSlot)
     
 
     def start(self):

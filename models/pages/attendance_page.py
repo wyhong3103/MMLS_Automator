@@ -17,24 +17,23 @@ import re
 class noQrCodeFound(ValueError):
     pass
 
+class invalidCredential(ValueError):
+    pass
+
 class AttendancePage:
     def __init__(self,parent,userid, userpw):
         self.userid = userid
         self.userpw = userpw
         self.parent = parent
-        self.qrcodes = self.qrcode_read
+        self.qrcodes = None
     
 
-    @property
     def qrcode_read(self):
         """
         This function convert the QR Code on your screen to URL, and return it.
         """
         try:
             logging.info("Preparing to scan QR Code.")
-            for i in range(5,0,-1):
-                print(f"Make sure the qrcode is staying on your screen... {i}")
-                time.sleep(1)
             screenshot = pyautogui.screenshot()
             logging.info("QRCode.jpg is being saved, and waiting to be scan.")
             screenshot.save("qrcode.jpg")
@@ -49,10 +48,10 @@ class AttendancePage:
             logging.info("QRCode.jpg is removed and deleted from the machine.")
             if not qrcodes:
                 raise noQrCodeFound
-            return qrcodes
+            self.qrcodes = qrcodes
         except noQrCodeFound:
             logging.info("QR code is not detected!")
-            return []
+            self.qrcodes = []
 
     def attendanceLogin(self):
         usernameInput = self.parent.find_element(By.CSS_SELECTOR,AttendanceLocators.USERNAME)
@@ -73,8 +72,7 @@ class AttendancePage:
             logging.info("TimeoutException is raised, it's either of the slow connection or login unsucessful.")
             if self.parent.current_url != "https://mmls2.mmu.edu.my/attendance/success/home":
                 logging.info("Login Unsucessful, invalid credential.")
-                print("\nInvalid Credential!\n")
-                with open("json\\randomtextfile","w") as json_file:
+                with open("json\\userinfo.json","w") as json_file:
                         userinfo = {"username":"","password":""}
                         json.dump(userinfo,json_file)
                 logging.info("Reinitialized the user information in JSON file. Will be asking for it again.")
@@ -103,8 +101,11 @@ class AttendancePage:
                         home_button = self.parent.find_element(By.CSS_SELECTOR,AttendanceLocators.HOME_BUTTON)
                         home_button.click()
                     self.parent.get(url)
-                    logging.info("Accessing to the attendance site.")
-                    yield f"QR Code {i+1}: {self.returnStatus()}"
+                    if self.attendanceLogin():
+                        logging.info("Accessing to the attendance site.")
+                        yield f"QR Code {i+1}: {self.returnStatus()}"
+                    else:
+                        raise invalidCredential
                 else:
                     logging.info("QR Code contains non-mmls link.")
                     yield f"QR Code {i+1}: This QR Code contains non-mmls link." 
