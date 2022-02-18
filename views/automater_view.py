@@ -16,8 +16,105 @@ import sys
 
 from numpy import true_divide
 
+mainWindow = """
+
+#mainWidget{
+    background-color : #555555;
+}
+
+QLabel{
+    color : white;
+}
+
+QLabel#titleText{
+    font-size : 25px;
+    font-weight: bold;
+}
+
+#subjectLabel, #dateLabel, #newAnnouncementLabel{
+    font-size: 14px;
+    font-weight : bold;
+    text-align : center;
+}
+
+
+QPushButton{   
+    background-color: #F3CA20;
+    color : white;
+    border-radius : 12px;
+    font-weight: bold;
+    font-size : 15px;
+    margin : 5px;
+  
+}
+
+QPushButton#attendanceButton{
+    font-size: 18px;
+}
+
+QPushButton:hover{
+    background-color : #EDDD6D;
+}
+
+QTextEdit{
+    background-color : #474747;
+    color : white;
+    border-radius : 10px;
+    padding: 10px;
+    font-size : 15px;
+}
+
+QGroupBox{
+    color : white;
+    font-size : 18px;
+    font-weight : bold;
+    border-color : black;
+}
+
+QComboBox{
+    background-color : #474747;
+    color : white;
+    border-radius : 10px;
+    padding : 3px;
+}
 """
-Insert Subjects/dates to combo box
+
+dialog = """
+QWidget{
+    background-color : #555;
+    color : white;
+}
+
+"""
+
+loginWin ="""
+QWidget{
+    background-color : #555;
+    color : white;
+}
+
+QLineEdit{
+    background-color : #474747;
+    border-radius: 10px;
+    font-size : 15px;
+    height : 30px;
+    padding : 5px;
+}
+
+QPushButton{   
+    background-color: #F3CA20;
+    color : white;
+    border-radius : 12px;
+    font-weight: bold;
+    font-size : 18px;
+    margin-right : 10px;
+  
+}
+
+
+QPushButton:hover{
+    background-color : #EDDD6D;
+}
 """
 
 class MainWindow(QMainWindow):
@@ -30,16 +127,12 @@ class MainWindow(QMainWindow):
 
     def __init__(self):
         super(MainWindow,self).__init__()
-        self.setFixedSize(1000, 750)
+        self.setWindowIcon(QtGui.QIcon("mmulogo.ico"))
+        self.setFixedSize(1000, 900)
         self.setWindowTitle("MMLS Automater - 3.0")
         self._initUI()
-        # self.setStyleSheet(self.styleSheet)
+        self.setStyleSheet(mainWindow)
 
-    @property
-    def styleSheet(self):
-        #show border stylesheet
-        stylesheet = "background-color: rgb(255,0,0); margin:5px; border:1px solid rgb(0, 255, 0); "
-        return stylesheet
 
     def _initUI(self):
         self._initMenu()
@@ -58,7 +151,7 @@ class MainWindow(QMainWindow):
         self.dateBox.addItems(array)
 
     def updateNumerOfNewAnnouncement(self,text):
-        self.numberOfNew.setText(text)
+        self.numberOfNew.insertPlainText(text)
         self.numberOfNew.adjustSize()
     
     def on_subjectChanged(self):
@@ -86,6 +179,8 @@ class MainWindow(QMainWindow):
 
     def on_report(self):
         self.dialogBox = QDialog()
+        self.dialogBox.setWindowIcon(QtGui.QIcon("mmulogo.ico"))
+        self.dialogBox.setStyleSheet(dialog)
         #deal with the "?"
         self.dialogBox.setWhatsThis("Hi there!")
         self.dialogBox.setWindowTitle("About The Application")
@@ -127,6 +222,8 @@ class MainWindow(QMainWindow):
     
     def on_aboutTheApp(self):
         self.dialogBox = QDialog()
+        self.dialogBox.setWindowIcon(QtGui.QIcon("mmulogo.ico"))
+        self.dialogBox.setStyleSheet(dialog)
         #deal with the "?"
         self.dialogBox.setWhatsThis("Hi there!")
         self.dialogBox.setWindowTitle("Report Bugs")
@@ -193,7 +290,9 @@ class MainWindow(QMainWindow):
 
     def _createMenuBar(self):
         self.menuBar = QtWidgets.QMenuBar(self)
+        self.menuBar.setObjectName("menubar")
         self.applicationMenu = self.menuBar.addMenu("Application")
+        self.applicationMenu.setObjectName("applicationMenu")
         self.applicationMenu.addAction(self.exitAction)
         self.applicationMenu.addAction(self.aboutTheApp)
         self.accountMenu =  self.menuBar.addMenu("Account")
@@ -206,15 +305,17 @@ class MainWindow(QMainWindow):
 
     def _createAttendancButton(self):
         self.attendanceButton = QPushButton("Take Attendance")
+        self.attendanceButton.setObjectName("attendanceButton")
         self.attendanceLayout.addWidget(self.attendanceButton,2)
+        self.attendanceButton.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.attendanceButton.setMinimumHeight(70)
         self.attendanceButton.clicked.connect(self.on_openAttendanceWindow)
 
     def _createTitle(self):
         self.titleText = QLabel("MMLS Automater 3.0")
-        self.titleText.setFont(QtGui.QFont('Times New Roman',15))
+        self.titleText.setObjectName("titleText")
         self.titleText.setAlignment(QtCore.Qt.AlignRight)
-        self.titleText.setContentsMargins(0,20,0,0)
+        self.titleText.setContentsMargins(0,30,0,0)
         self.titleText.adjustSize()
         self.attendanceLayout.addWidget(self.titleText,5)
 
@@ -230,19 +331,23 @@ class MainWindow(QMainWindow):
 
     def _createAnnouncementMenuWidgets(self):
         self.annoucementMenuLayout.addStretch(2)
-        newAnnouncementsLabel = QLabel("Number of new announcements")
+        newAnnouncementsLabel = QLabel("Number of\nnew announcements")
+        newAnnouncementsLabel.setObjectName("newAnnouncementLabel")
         labelFont = QtGui.QFont("Normal",9)
+        newAnnouncementsLabel.setAlignment(QtCore.Qt.AlignCenter)
         labelFont.setWeight(5)
-        labelFont.setUnderline(True)
         newAnnouncementsLabel.setFont(labelFont)
         newAnnouncementsLabel.setMargin(0)
         self.annoucementMenuLayout.addWidget(newAnnouncementsLabel,0)
-        self.numberOfNew = QLabel()
-        self.numberOfNew.setAlignment(QtCore.Qt.AlignCenter)
+
+        self.numberOfNew = QTextEdit()
+        self.numberOfNew.setReadOnly(True)
         self.annoucementMenuLayout.addWidget(self.numberOfNew,0)
+        self.annoucementMenuLayout.setAlignment(self.numberOfNew,QtCore.Qt.AlignCenter)
 
         self.annoucementMenuLayout.addStretch(1)
         self.viewNewButton = QPushButton("View All\n New Announcements")
+        self.viewNewButton.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.viewNewButton.setMinimumHeight(60)
         self.viewNewButton.clicked.connect(self.on_viewNewAnnouncement)
         self.annoucementMenuLayout.addWidget(self.viewNewButton)
@@ -250,25 +355,29 @@ class MainWindow(QMainWindow):
         self.annoucementMenuLayout.addStretch(2)
 
         subjectLabel = QLabel("Subject")
+        subjectLabel.setObjectName("subjectLabel")
         subjectLabel.setAlignment(QtCore.Qt.AlignCenter)
         self.annoucementMenuLayout.addWidget(subjectLabel)
         self.subjectBox = QComboBox()
         self.subjectBox.addItem("-")
         self.subjectBox.setMaximumWidth(230)
-        self.subjectBox.setMinimumHeight(40)
+        self.subjectBox.setMinimumHeight(45)
         self.subjectBox.currentTextChanged.connect(self.on_subjectChanged)
         self.annoucementMenuLayout.addWidget(self.subjectBox,5)
         
         dateLabel = QLabel("Date")
+        dateLabel.setObjectName("dateLabel")
         dateLabel.setAlignment(QtCore.Qt.AlignCenter)
         self.annoucementMenuLayout.addWidget(dateLabel)
         self.dateBox = QComboBox()
         self.dateBox.addItem("-")
         self.dateBox.setMaximumWidth(230)
-        self.dateBox.setMinimumHeight(40)
+        self.dateBox.setMinimumHeight(45)
         self.annoucementMenuLayout.addWidget(self.dateBox,5)
 
         self.viewAnnouncementButton = QPushButton("View\n Announcement")
+
+        self.viewAnnouncementButton.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.viewAnnouncementButton.setMinimumWidth(170)
         self.viewAnnouncementButton.setMinimumHeight(60)
         self.viewAnnouncementButton.clicked.connect(self.on_viewAnnouncement)
@@ -280,6 +389,7 @@ class MainWindow(QMainWindow):
 
     def _createAnnouncementDisplayWidgets(self):
         self.displayOutput = QTextEdit()
+        self.displayOutput.setFixedWidth(700)
         self.displayOutput.setReadOnly(True)
         self.announcementLayout.addWidget(self.displayOutput)
         sb = self.displayOutput.verticalScrollBar()
@@ -291,7 +401,9 @@ class MainWindow(QMainWindow):
         Only those objects that will be used afterwards will be the property of the class
         """
         mainVlayoutwidget = QWidget()
+        mainVlayoutwidget.setObjectName("mainWidget")
         mainVlayout = QVBoxLayout()
+        mainVlayout.setObjectName("mainLayout")
         mainVlayoutwidget.setLayout(mainVlayout)
         self.setCentralWidget(mainVlayoutwidget)
 
@@ -328,9 +440,11 @@ class LoginWindow(QWidget):
 
     def __init__(self):
         super(LoginWindow,self).__init__()
+        self.setWindowIcon(QtGui.QIcon("mmulogo.ico"))
         self.setFixedSize(500, 250)
         self.setWindowTitle("MMLS Automater - 3.0 - Login")
         self._initui()
+        self.setStyleSheet(loginWin)
 
     def _initui(self):
         self._initLayOut()
@@ -383,8 +497,9 @@ class LoginWindow(QWidget):
         passwordLayout.addWidget(self.passwordBox,2)
 
         self.loginButton = QPushButton("Login", clicked=self.submitIdPw)
+        self.loginButton.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.loginButton.setMinimumHeight(40)
-        self.loginButton.setMaximumWidth(200)
+        self.loginButton.setMinimumWidth(200)
 
 
         self.loginLayout.addWidget(userIdWidget)
@@ -398,11 +513,13 @@ class AttendanceWindow(QDialog):
     
     def __init__(self):
         super(AttendanceWindow,self).__init__()
+        self.setWindowIcon(QtGui.QIcon("mmulogo.ico"))
         self.setFixedSize(700,300)
         self.setWindowTitle("Take Attendance")
         self.setModal(True)
         self.setWhatsThis("TIME TO TAKE ATTENDANCE!")
         self._initUI()
+        self.setStyleSheet(dialog)
     
     def on_takeAttendance(self):
         self.takeAttendance.emit(
@@ -464,9 +581,8 @@ class AttendanceWindow(QDialog):
         
         self.layout.addWidget(self.timerLabel)
 
-        self.layout.addStretch(2) 
-
-
+        self.layout.addStretch(2)
+    
 def main():
     app = QApplication(sys.argv)
     win = MainWindow()

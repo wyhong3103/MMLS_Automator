@@ -6,4 +6,5 @@
 /models/pages/__pycache__
 /models/parser/__pycache__
 /views/__pycache__
+selenium_header.py
 test.py

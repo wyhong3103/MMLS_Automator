@@ -22,11 +22,9 @@ logging.basicConfig(
     filename = f"logs\\logs-{date}.txt")
 
 def main():
-    logging.info("Starting main menu.")
     app = QApplication(sys.argv)
     controller = Controller()
     controller.start()
-    logging.info("Ending this application.")
     sys.exit(app.exec_())
 
 if __name__  == "__main__":

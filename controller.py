@@ -143,7 +143,7 @@ class Controller():
         This function update the new announcement to the text box.
         """
         logging.info("Grabbing all the new announcements...")
-        if self.mainWindow.numberOfNew.text() == "No New Announcements!":
+        if self.mainWindow.numberOfNew.toPlainText() == "No New Announcements!":
             self.mainWindow.insertToDisplay("There is no new announcement for today!")
             return
 
@@ -231,17 +231,23 @@ class Controller():
         self.initUserJson()
         userinfo = self.getIdPw()
         logging.info("Grabbing user id and password from userinfo.json in order to log in...")
-        try:
-            if userinfo: 
-                logging.info("Attempting to login with the user id and password provided from userinfo.json")
-                self.login(userinfo)
-            else:
-                logging.info("userinfo.json contains no user information! Starting login window...")
-                self.runLoginWindow()
-        except Exception as exception:
-            execpt = type(exception).__name__
-            logging.error(f"{execpt} has been thrown by the application! Exiting program...")
-            print(f"\nSomething went wrong! {execpt}\n")
+        # try:
+        #     if userinfo: 
+        #         logging.info("Attempting to login with the user id and password provided from userinfo.json")
+        #         self.login(userinfo)
+        #     else:
+        #         logging.info("userinfo.json contains no user information! Starting login window...")
+        #         self.runLoginWindow()
+        # except Exception as exception:
+        #     execpt = type(exception).__name__
+        #     logging.error(f"{execpt} has been thrown by the application! Exiting program...")
+        #     print(f"\nSomething went wrong! {execpt}\n")
+        if userinfo: 
+            logging.info("Attempting to login with the user id and password provided from userinfo.json")
+            self.login(userinfo)
+        else:
+            logging.info("userinfo.json contains no user information! Starting login window...")
+            self.runLoginWindow()
 
 
         

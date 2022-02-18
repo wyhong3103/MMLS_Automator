@@ -12,7 +12,7 @@ class Parser:
         self.parent = parent
 
 
-    def updateJSON(self,subject_dict : str,subjectName : str) -> Dict:
+    def updateJSON(self,subject_dict,subjectName : str) -> Dict:
         """
         This function helps to grab the new announcements and return it to the caller function.
         """
