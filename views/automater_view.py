@@ -467,7 +467,6 @@ class AttendanceWindow(QDialog):
         self.layout.addStretch(2) 
 
 
-
 def main():
     app = QApplication(sys.argv)
     win = MainWindow()
