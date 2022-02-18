@@ -16,7 +16,7 @@ class Parser:
         """
         This function helps to grab the new announcements and return it to the caller function.
         """
-        logging.info("Subjects' JSON File is being updated")
+        logging.info(f"{subjectName} JSON File is being updated")
         if subjectName not in subject_dict:
             logging.info(f"{subjectName} is not found in the JSON, it's being initialized.")
             subject_dict[subjectName] = {

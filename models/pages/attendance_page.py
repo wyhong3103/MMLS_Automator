@@ -85,7 +85,6 @@ class AttendancePage:
         """
         logging.info("Login successfully and taking attendance...")
         message = self.parent.find_element(By.CSS_SELECTOR,AttendanceLocators.MESSAGE).text
-        logging.info(f"Browser : {message}")
         return f"\n{message}\n"
 
     def takeAttendance(self) -> str:
@@ -93,6 +92,7 @@ class AttendancePage:
         This function take the attendance.
         """
         if self.qrcodes:
+            logging.info("Iterating through the QR Codes...")
             for i,url in enumerate(self.qrcodes):
                 pattern = "https://mmls2.mmu.edu.my/attendance.+"
                 logging.info("Using regular expression to validate the link provided.")
@@ -101,6 +101,7 @@ class AttendancePage:
                         home_button = self.parent.find_element(By.CSS_SELECTOR,AttendanceLocators.HOME_BUTTON)
                         home_button.click()
                     self.parent.get(url)
+                    logging.info(f"Accessing : {url}")
                     if self.attendanceLogin():
                         logging.info("Accessing to the attendance site.")
                         yield f"QR Code {i+1}: {self.returnStatus()}"

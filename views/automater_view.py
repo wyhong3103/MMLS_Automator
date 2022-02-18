@@ -6,12 +6,15 @@ from PyQt5.QtWidgets import (QApplication,
                              QHBoxLayout,
                              QVBoxLayout,
                              QLabel,
+                             QDialog,
                              QGroupBox,
                              QComboBox,
                              QTextEdit,
                              QLineEdit,
                              QMessageBox)
 import sys
+
+from numpy import true_divide
 
 """
 Insert Subjects/dates to combo box
@@ -22,6 +25,8 @@ class MainWindow(QMainWindow):
     viewAnnouncement = QtCore.pyqtSignal(str,str)
     viewNewAnnouncement = QtCore.pyqtSignal(bool)
     takeAttendance = QtCore.pyqtSignal(bool)
+    logOut = QtCore.pyqtSignal(bool)
+    reset = QtCore.pyqtSignal(bool)
 
     def __init__(self):
         super(MainWindow,self).__init__()
@@ -29,7 +34,6 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("MMLS Automater - 3.0")
         self._initUI()
         # self.setStyleSheet(self.styleSheet)
-
 
     @property
     def styleSheet(self):
@@ -42,7 +46,6 @@ class MainWindow(QMainWindow):
         self._initMainLayout()
         self._initAttendanceWidgets()
         self._initAnnouncementWidgets()
-        print(self.numberOfNew.text())
 
     def insertToDisplay(self,text):
         self.displayOutput.setText("")
@@ -81,18 +84,118 @@ class MainWindow(QMainWindow):
         )
         self.attendanceWindow.show()
 
+    def on_report(self):
+        self.dialogBox = QDialog()
+        #deal with the "?"
+        self.dialogBox.setWhatsThis("Hi there!")
+        self.dialogBox.setWindowTitle("About The Application")
+        self.dialogBox.setFixedSize(400,280)
+        layout = QVBoxLayout()
+        self.dialogBox.setLayout(layout)
+
+        layout.addStretch()
+        titleFont = QtGui.QFont("Normal",13)
+        titleFont.setBold(True)
+        titleFont.setUnderline(True)
+        descFont = QtGui.QFont("Normal",10)
+
+        title = QLabel()
+        title.setText("Found Bugs? Report It!")        
+        title.setFont(titleFont)
+        title.setAlignment(QtCore.Qt.AlignCenter)
+        layout.addWidget(title)
+
+        desc = QLabel()
+        desc.setText("Contact me on discord to report it!\nStAx#6239")
+        desc.setFont(descFont)
+        desc.setAlignment(QtCore.Qt.AlignCenter)
+        layout.addWidget(desc)
+        layout.addStretch()
+
+        self.dialogBox.setModal(True)
+        self.dialogBox.show()
+
+    def on_logOut(self):
+        self.logOut.emit(
+            True
+        )
+
+    def on_reset(self):
+        self.reset.emit(
+            True
+        )
+    
+    def on_aboutTheApp(self):
+        self.dialogBox = QDialog()
+        #deal with the "?"
+        self.dialogBox.setWhatsThis("Hi there!")
+        self.dialogBox.setWindowTitle("Report Bugs")
+        self.dialogBox.setFixedSize(500,300)
+        layout = QVBoxLayout()
+        self.dialogBox.setLayout(layout)
+
+        layout.addStretch()
+        titleFont = QtGui.QFont("Normal",12)
+        titleFont.setBold(True)
+        titleFont.setUnderline(True)
+        descFont = QtGui.QFont("Normal",8)
+
+        aimTitle = QLabel()
+        aimTitle.setFont(titleFont)
+        aimTitle.setAlignment(QtCore.Qt.AlignCenter)
+        aimTitle.setText("Aim")
+        aimTitle.adjustSize()
+        layout.addWidget(aimTitle)
+        
+        aimDesc = QLabel()
+        aimDesc.setMargin(10)
+        aimDesc.setFont(descFont)
+        aimDesc.setAlignment(QtCore.Qt.AlignLeft)
+        aimDesc.setText("This application is mainly focused on\n-Notify MMU students whether if there's new announcements\n-Allow them to take the attendance without having\n to scan the QR Code.\n-Make their life easier essentially :)\n-Make MY LIFE EASIER")
+        aimDesc.adjustSize()
+        layout.addWidget(aimDesc)
+
+
+        aboutMeTitle = QLabel()
+        aboutMeTitle.setFont(titleFont)
+        aboutMeTitle.setAlignment(QtCore.Qt.AlignCenter)
+        aboutMeTitle.setText("About Me")
+        aboutMeTitle.adjustSize()
+        layout.addWidget(aboutMeTitle)
+
+        aboutMeDesc = QLabel()
+        aboutMeDesc.setMargin(10)
+        aboutMeDesc.setFont(descFont)
+        aboutMeDesc.setAlignment(QtCore.Qt.AlignLeft)
+        aboutMeDesc.setText("I am essentially a MMU student, as y'all might already know\nUh, there's really nothing special about me!\nCheck out my GitHub:\nhttps://github.com/wyhong3103")
+        aboutMeDesc.adjustSize()
+        layout.addWidget(aboutMeDesc)
+        layout.addStretch(2)
+        self.dialogBox.setModal(True)
+        self.dialogBox.show()
+    
+
+    def _initActionHandler(self):
+        self.exitAction.triggered.connect(self.close)
+        self.aboutTheApp.triggered.connect(self.on_aboutTheApp)
+        self.logoutAction.triggered.connect(self.on_logOut)
+        self.resetAction.triggered.connect(self.on_reset)
+        self.reportAction.triggered.connect(self.on_report)
+        #report opens up a window to my contact
+
     def _createActions(self):
         self.exitAction = QtWidgets.QAction("Exit",self)
-        self.aboutMe = QtWidgets.QAction("About Me",self)
+        self.aboutTheApp = QtWidgets.QAction("About This Application",self)
         self.logoutAction = QtWidgets.QAction("Log Out",self)
         self.resetAction = QtWidgets.QAction("Reset Automater",self) 
         self.reportAction = QtWidgets.QAction("Report Bugs", self)
+        self._initActionHandler()
 
     def _createMenuBar(self):
         self.menuBar = QtWidgets.QMenuBar(self)
         self.applicationMenu = self.menuBar.addMenu("Application")
         self.applicationMenu.addAction(self.exitAction)
-        self.applicationMenu.addAction(self.aboutMe)
+        self.applicationMenu.addAction(self.aboutTheApp)
         self.accountMenu =  self.menuBar.addMenu("Account")
         self.accountMenu.addAction(self.logoutAction)
         self.helpMenu =  self.menuBar.addMenu("Help")
@@ -289,14 +392,16 @@ class LoginWindow(QWidget):
         self.loginLayout.addWidget(self.loginButton)
         self.loginLayout.setAlignment(self.loginButton, QtCore.Qt.AlignRight)
 
-class AttendanceWindow(QWidget):
+class AttendanceWindow(QDialog):
     
     takeAttendance = QtCore.pyqtSignal(bool)
     
     def __init__(self):
         super(AttendanceWindow,self).__init__()
-        self.setFixedSize(600,200)
+        self.setFixedSize(700,300)
         self.setWindowTitle("Take Attendance")
+        self.setModal(True)
+        self.setWhatsThis("TIME TO TAKE ATTENDANCE!")
         self._initUI()
     
     def on_takeAttendance(self):
@@ -359,7 +464,7 @@ class AttendanceWindow(QWidget):
         
         self.layout.addWidget(self.timerLabel)
 
-        self.layout.addStretch(2)
+        self.layout.addStretch(2) 
 
 
 
@@ -367,7 +472,6 @@ def main():
     app = QApplication(sys.argv)
     win = MainWindow()
     win.show()
-    MessageBox().loginFail()
     sys.exit(app.exec_())
 
 if __name__ == "__main__" :

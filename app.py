@@ -26,7 +26,6 @@ def main():
     app = QApplication(sys.argv)
     controller = Controller()
     controller.start()
-
     logging.info("Ending this application.")
     sys.exit(app.exec_())
 
