@@ -82,7 +82,7 @@ Username and password stored are not encrypted and all, so please, be aware of i
 
 ## Thoughts
 
-It was a pretty fun project to do, it's been sometimes since the last time I dealt with selenium and other modules. Not sure how can we implement asyncIO in this application, but I am pretty sure this application can still be optimize and all.
+Remaking is hell, especially when you want to go from text-based UI to graphical UI, it's my first time using PyQT5 also, MVC architecture helps a lot in terms of structuring my program. I learned quite a lot of things in this remake, especially with PyQt5, signals, slots, etc etc. It was really fun, honestly, I wouldn't even consider of doing it if it wasn't for the hackerspace project! But hey, I've done it anyway!  
 
 ## Bugs
 
