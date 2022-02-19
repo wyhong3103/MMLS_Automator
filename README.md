@@ -1,11 +1,11 @@
 # MMLS Automator (3.0 With GUI!)
 
 I've decided not to update it on the original repository. Because ,it's basically a remake at this point.
-<br>
+<br><br>
 If you don't know already,
-<br>
+<br><br>
 This python application let you automate stuff like taking attendance during your lecture without having your phone, or using the link, check your MMLS for any new announcements.
-<br>
+<br><br>
 Inspiration : MMLS2 has no notification from lecturers, QR code is unscannable using MMLS mobile application, that's what inspired me to build this.
 
 ## What's New In This Version?
