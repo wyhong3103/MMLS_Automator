@@ -52,7 +52,7 @@ And that's essentially what it does.
 
 ## Modules Included
 
--PyQt5
+- PyQt5
 
 - OpenCV 
 
