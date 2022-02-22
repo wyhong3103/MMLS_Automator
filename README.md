@@ -1,11 +1,11 @@
 # MMLS Automator (3.0 With GUI!)
 
 I've decided not to update it on the original repository. Because ,it's basically a remake at this point.
-<br>
+<br><br>
 If you don't know already,
-<br>
+<br><br>
 This python application let you automate stuff like taking attendance during your lecture without having your phone, or using the link, check your MMLS for any new announcements.
-<br>
+<br><br>
 Inspiration : MMLS2 has no notification from lecturers, QR code is unscannable using MMLS mobile application, that's what inspired me to build this.
 
 ## What's New In This Version?
@@ -52,7 +52,7 @@ And that's essentially what it does.
 
 ## Modules Included
 
--PyQt5
+- PyQt5
 
 - OpenCV 
 
@@ -82,7 +82,7 @@ Username and password stored are not encrypted and all, so please, be aware of i
 
 ## Thoughts
 
-It was a pretty fun project to do, it's been sometimes since the last time I dealt with selenium and other modules. Not sure how can we implement asyncIO in this application, but I am pretty sure this application can still be optimize and all.
+Remaking is hell, especially when you want to go from text-based UI to graphical UI, it's my first time using PyQT5 also, MVC architecture helps a lot in terms of structuring my program. I learned quite a lot of things in this remake, especially with PyQt5, signals, slots, etc etc. It was really fun, honestly, I wouldn't even consider of doing it if it wasn't for the hackerspace project! But hey, I've done it anyway!  
 
 ## Bugs
 
