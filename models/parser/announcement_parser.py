@@ -24,16 +24,18 @@ class Parser:
                                         "announcements" : dict()
                                         }
 
-        announcementCards = self.parent.find_elements(By.CSS_SELECTOR,PageLocators.CARD_ANNOUNCEMENT)[1:]
+        #Not taking the first card, which isn't a subject card
+        announcementCards = self.parent.find_elements(By.CSS_SELECTOR,PageLocators.CARD_ANNOUNCEMENT)[:0:-1]
         announcements =  subject_dict[subjectName]["announcements"]
         dateOfNew = []
+        newAnnouncements = dict()
         dateKeys = list(announcements.keys())
 
         logging.info("New announcements are being updated to the JSON object.")
         #If dateKeys is empty that means we're going to grab all available announcements
         if dateKeys:
-            lastDate = dateKeys[0]
-            for i in announcementCards:
+            lastDate = dateKeys[-1]
+            for i in announcementCards[::-1]:
                 title = i.find_element(By.CSS_SELECTOR,CardLocators.TITLE).text
                 author = i.find_element(By.CSS_SELECTOR,CardLocators.AUTHOR).text
                 date = re.search("Published at : (.+)",author)[1]
@@ -47,8 +49,8 @@ class Parser:
                 
                 task = i.find_element(By.CSS_SELECTOR,CardLocators.TASK).text
                 
-                if date not in announcements.keys():
-                    announcements[date] = []
+                if date not in newAnnouncements.keys():
+                    newAnnouncements[date] = []
                 announcementStr = f"Title:\n{title}\n\n{author}\n\nAnnouncement:\n{task}"
 
                 #Code below basically check if the date we're currently checking 
@@ -57,10 +59,17 @@ class Parser:
                 if date == lastDate:
                     if announcementStr in announcements[lastDate]:
                         continue
-                announcements[date].append(announcementStr)
+                newAnnouncements[date].append(announcementStr)
 
                 if date not in dateOfNew:
                     dateOfNew.append(date)
+            for i in list(newAnnouncements.keys())[::-1]:
+                if i not in announcements.keys():
+                    announcements[i] = newAnnouncements[i]
+                else:
+                    for x in newAnnouncements[i]:
+                        announcements[i].append(x)
+            
         else:
             for i in announcementCards:
                 title = i.find_element(By.CSS_SELECTOR,CardLocators.TITLE).text

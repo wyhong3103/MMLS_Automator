@@ -62,6 +62,7 @@ QTextEdit{
     border-radius : 10px;
     padding: 10px;
     font-size : 15px;
+    margin-right : 10px;
 }
 
 QGroupBox{
@@ -331,7 +332,7 @@ class MainWindow(QMainWindow):
 
     def _createAnnouncementMenuWidgets(self):
         self.annoucementMenuLayout.addStretch(2)
-        newAnnouncementsLabel = QLabel("Number of\nnew announcements")
+        newAnnouncementsLabel = QLabel("New Announcements")
         newAnnouncementsLabel.setObjectName("newAnnouncementLabel")
         labelFont = QtGui.QFont("Normal",9)
         newAnnouncementsLabel.setAlignment(QtCore.Qt.AlignCenter)

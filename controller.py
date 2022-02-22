@@ -104,17 +104,17 @@ class Controller():
         with open(f"json\\{self.userId}_subject_info.json","r") as js:
             subjectDict = json.load(js)
         
-        string = ""
+        numberOfNew_list = []
         for subject in subjectDict.keys():
-            numberOfNew = len(subjectDict[subject]["dateOfNew"])
-            if numberOfNew > 0:
-                string += f"{subject} - {numberOfNew}\n"
+            numberOfNew = "\n".join(subjectDict[subject]["dateOfNew"])
+            if len(numberOfNew) > 0:
+                numberOfNew_list.append(f"{subject} :\n{numberOfNew}\n")
         
-        if not string:
-            string = "No New Announcements!"
+        if not numberOfNew_list:
+            numberOfNew_list.append("No New Announcements!")
         
         logging.info("Successfully updated the new announcement label!")
-        self.mainWindow.updateNumerOfNewAnnouncement(string)
+        self.mainWindow.updateNumerOfNewAnnouncement("-----------\n".join(numberOfNew_list))
 
 
     def updateAnnouncement(self, subject, date):
