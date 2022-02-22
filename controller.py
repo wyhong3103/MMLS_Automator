@@ -152,12 +152,13 @@ class Controller():
         
         string = ""
         for subjectName in subjectDict:
-            string += f"---------------\n{subjectName}\n---------------\n"
-            for i in subjectDict[subjectName]["dateOfNew"]:
-                for j in subjectDict[subjectName]["announcements"][i]:
-                    string += j
-                    string += "\n---------------------------------------------\n"
-            string += "\n\n\n\n\n"
+            if len(subjectDict[subjectName]["dateOfNew"]):
+                string += f"---------------\n{subjectName}\n---------------\n"
+                for i in subjectDict[subjectName]["dateOfNew"]:
+                    for j in subjectDict[subjectName]["announcements"][i]:
+                        string += j
+                        string += "\n---------------------------------------------\n"
+                string += "\n\n\n\n\n"
         
         logging.info("Successfully updated the new announcement in the text box!")
         self.mainWindow.insertToDisplay(string)
