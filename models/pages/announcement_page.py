@@ -48,6 +48,9 @@ class AnnouncementPage:
             if self.isElementPresent(GeneralLocators.INVALID_LOGIN):
                 logging.info("Login unsucessful! Reinitializing username and password, reask from user.")
                 return False
+            if self.isElementPresent(GeneralLocators.CODE) :
+                if self.page.find_element(By.CSS_SELECTOR, GeneralLocators.CODE).text == "500" :
+                    self.page.refresh()
         
         self.checkSubjectCards()
         return True
