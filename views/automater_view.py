@@ -14,7 +14,6 @@ from PyQt5.QtWidgets import (QApplication,
                              QMessageBox)
 import sys
 
-from numpy import true_divide
 
 mainWindow = """
 
@@ -115,6 +114,11 @@ QPushButton{
 
 QPushButton:hover{
     background-color : #EDDD6D;
+}
+
+QMessageBox QPushButton{
+    width : 80px;
+    height : 30px;
 }
 """
 
@@ -521,6 +525,7 @@ class AttendanceWindow(QDialog):
         self.setWhatsThis("TIME TO TAKE ATTENDANCE!")
         self._initUI()
         self.setStyleSheet(dialog)
+
     
     def on_takeAttendance(self):
         self.takeAttendance.emit(
@@ -586,7 +591,7 @@ class AttendanceWindow(QDialog):
     
 def main():
     app = QApplication(sys.argv)
-    win = MainWindow()
+    win = LoginWindow()
     win.show()
     sys.exit(app.exec_())
 
