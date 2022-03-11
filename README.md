@@ -78,7 +78,7 @@ And that's essentially what it does.
 
 ## Screenshots
 
-![sample image](.\images\sample1.png)
+![sample image](https://github.com/wyhong3103/MMLS_Automator/blob/main/images/sample1.png)
 
 
 ## Side Note
