@@ -78,7 +78,7 @@ And that's essentially what it does.
 
 ## Screenshots
 
-![sample image](images\sample1.png)
+![sample image](.\images\sample1.png)
 
 
 ## Side Note
