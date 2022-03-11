@@ -76,6 +76,11 @@ And that's essentially what it does.
 
 - Pillow
 
+## Screenshots
+
+![sample image](images\sample1.png)
+
+
 ## Side Note
 
 Username and password stored are not encrypted and all, so please, be aware of it, and use it on your own risk.
